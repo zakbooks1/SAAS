@@ -8,22 +8,26 @@
       background: #111;
       color: white;
       text-align: center;
-      padding: 40px;
+      padding: 30px;
     }
 
     .card {
       background: #222;
-      padding: 20px;
+      padding: 15px;
       margin: 10px auto;
-      width: 300px;
+      width: 320px;
       border-radius: 10px;
+    }
+
+    textarea {
+      width: 90%;
+      height: 120px;
+      margin-top: 10px;
     }
 
     button {
       padding: 10px;
       margin-top: 10px;
-      border: none;
-      border-radius: 8px;
       cursor: pointer;
     }
   </style>
@@ -32,16 +36,63 @@
 <body>
 
   <h1>🎮 Games</h1>
-  <p>Play and publish games here</p>
 
   <div class="card">
-    <h3>Sample Game</h3>
-    <p>Clicker prototype</p>
-    <button onclick="alert('Game placeholder')">Play</button>
+    <h3>Upload Game (HTML)</h3>
+
+    <textarea id="code" placeholder="Paste HTML game here"></textarea>
+    <br>
+    <button onclick="uploadGame()">Upload</button>
   </div>
 
+  <h2>My Games</h2>
+  <div id="list"></div>
+
   <br>
-  <a href="/">⬅ Back Home</a>
+  <a href="/">⬅ Home</a>
+
+<script>
+function uploadGame() {
+  const code = document.getElementById("code").value;
+
+  if (!code) return alert("No code!");
+
+  let games = JSON.parse(localStorage.getItem("games") || "[]");
+
+  const id = Date.now();
+
+  games.push({ id, code });
+
+  localStorage.setItem("games", JSON.stringify(games));
+
+  loadGames();
+}
+
+function loadGames() {
+  let games = JSON.parse(localStorage.getItem("games") || "[]");
+
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+
+  games.forEach(g => {
+    const div = document.createElement("div");
+    div.className = "card";
+
+    div.innerHTML = `
+      <p>Game ID: ${g.id}</p>
+      <button onclick="play(${g.id})">Play</button>
+    `;
+
+    list.appendChild(div);
+  });
+}
+
+function play(id) {
+  window.location.href = "/play.html?id=" + id;
+}
+
+loadGames();
+</script>
 
 </body>
 </html>
