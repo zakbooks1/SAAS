@@ -8,128 +8,144 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
-  <style>
-  body {
-    font-family: system-ui, Arial;
-    background: radial-gradient(circle at top, #1a1a1a, #0b0b0b);
-    color: #fff;
-    margin: 0;
-    padding: 20px;
-  }
+<style>
+body {
+  margin: 0;
+  font-family: system-ui, Arial;
+  background: #0b0b0f;
+  color: white;
+}
 
-  h1 {
-    font-size: 34px;
-    margin-bottom: 5px;
-  }
+/* TOP BAR */
+.topbar {
+  padding: 15px 20px;
+  background: #111;
+  border-bottom: 1px solid #222;
+}
 
-  h2 {
-    margin-top: 40px;
-    opacity: 0.9;
-  }
+/* LAYOUT */
+.layout {
+  display: flex;
+  height: calc(100vh - 70px);
+}
 
-  .card {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.08);
-    backdrop-filter: blur(10px);
-    padding: 16px;
-    margin: 12px auto;
-    width: 360px;
-    border-radius: 14px;
-    transition: 0.2s;
-  }
+/* LEFT PANEL */
+.panel {
+  width: 320px;
+  padding: 15px;
+  background: #121218;
+  border-right: 1px solid #222;
+  overflow-y: auto;
+}
 
-  .card:hover {
-    transform: translateY(-3px);
-    border-color: rgba(255,255,255,0.2);
-  }
+/* MAIN AREA */
+.main {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
 
-  input, textarea {
-    width: 90%;
-    padding: 10px;
-    margin: 6px 0;
-    border-radius: 8px;
-    border: none;
-    outline: none;
-    background: rgba(255,255,255,0.08);
-    color: white;
-  }
+/* CARDS */
+.card {
+  background: #161620;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #2a2a2a;
+  transition: 0.2s;
+}
 
-  textarea {
-    height: 120px;
-  }
+.card:hover {
+  transform: translateY(-3px);
+  border-color: #444;
+}
 
-  button {
-    padding: 10px 14px;
-    margin: 6px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: 0.2s;
-  }
+/* GRID */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px;
+}
 
-  button:hover {
-    transform: scale(1.05);
-  }
+/* INPUTS */
+input, textarea {
+  width: 100%;
+  padding: 10px;
+  margin: 6px 0;
+  border-radius: 8px;
+  border: none;
+  background: #1b1b25;
+  color: white;
+  outline: none;
+}
 
-  .primary { background: #4CAF50; color: white; }
-  .secondary { background: #2196F3; color: white; }
-  .danger { background: #ff4d4d; color: white; }
+textarea {
+  height: 120px;
+}
 
-  #status {
-    font-size: 13px;
-    opacity: 0.7;
-  }
+/* BUTTONS */
+button {
+  padding: 10px;
+  margin: 5px 0;
+  width: 100%;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+}
 
-  .section {
-    margin-top: 30px;
-  }
+.primary { background: #4CAF50; color: white; }
+.secondary { background: #2196F3; color: white; }
+.danger { background: #ff4d4d; color: white; }
 
-  .grid {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-  }
+/* TEXT */
+h1 { margin: 0; }
+h2 { margin-top: 10px; }
 </style>
+
 </head>
 
 <body>
 
-<h1>🎮 Game Platform</h1>
-
-<!-- ACCOUNT -->
-<div class="card">
-  <h3>Account</h3>
-
-  <input id="email" placeholder="Email">
-  <input id="password" type="password" placeholder="Password">
-
-  <br>
-
-  <button class="primary" onclick="signUp()">Sign Up</button>
-  <button class="secondary" onclick="signIn()">Login</button>
-  <button class="danger" onclick="logout()">Logout</button>
-
+<div class="topbar">
+  <h1>🎮 Game Platform</h1>
   <p id="status">Not logged in</p>
 </div>
 
-<!-- UPLOAD -->
-<div class="card">
-  <h3>Upload Game</h3>
-  <textarea id="code" placeholder="Paste HTML game here"></textarea>
-  <br>
-  <button class="primary" onclick="uploadGame()">Upload</button>
+<div class="layout">
+
+  <!-- LEFT PANEL -->
+  <div class="panel">
+    <h2>Account</h2>
+
+    <input id="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Password">
+
+    <button class="primary" onclick="signUp()">Sign Up</button>
+    <button class="secondary" onclick="signIn()">Login</button>
+    <button class="danger" onclick="logout()">Logout</button>
+
+    <hr>
+
+    <h2>Upload Game</h2>
+    <textarea id="code" placeholder="Paste HTML game here"></textarea>
+    <button class="primary" onclick="uploadGame()">Upload</button>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main">
+
+    <h2>👤 Your Games</h2>
+    <div id="list" class="grid"></div>
+
+    <h2>🌍 Public Games</h2>
+    <button class="secondary" onclick="loadAllGames()">Load All</button>
+    <div id="allGames" class="grid"></div>
+
+  </div>
+
 </div>
 
-<!-- USER GAMES -->
-<h2>👤 Your Games</h2>
-<div id="list"></div>
-
-<!-- PUBLIC GAMES -->
-<h2>🌍 Public Games</h2>
-<button class="secondary" onclick="loadAllGames()">Load Public Games</button>
-<div id="allGames"></div>
+</body>
 
 <script>
 const supabaseClient = supabase.createClient(
@@ -265,5 +281,4 @@ function play(id) {
 checkUser();
 </script>
 
-</body>
 </html>
