@@ -39,6 +39,21 @@
 
 <h1>🎮 Games</h1>
 
+  <div id="auth">
+  <h3>Account</h3>
+
+  <input id="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
+
+  <br><br>
+
+  <button onclick="signUp()">Sign Up</button>
+  <button onclick="signIn()">Login</button>
+  <button onclick="logout()">Logout</button>
+
+  <p id="status">Not logged in</p>
+</div>
+
 <textarea id="code" placeholder="Paste HTML game here"></textarea>
 <br>
 <button onclick="uploadGame()">Upload Game</button>
