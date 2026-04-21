@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Play Game</title>
+  <style>
+    body { margin: 0; background: black; }
+    iframe { width: 100vw; height: 100vh; border: none; }
+  </style>
+</head>
+
+<body>
+
+<iframe id="frame"></iframe>
+
+<script>
+const id = new URLSearchParams(location.search).get("id");
+
+let games = JSON.parse(localStorage.getItem("games") || "[]");
+
+let game = games.find(g => g.id == id);
+
+if (game) {
+  document.getElementById("frame").srcdoc = game.code;
+} else {
+  document.body.innerHTML = "<h1>Game not found</h1>";
+}
+</script>
+
+</body>
+</html>
