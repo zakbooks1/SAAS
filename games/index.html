@@ -8,44 +8,60 @@
   <style>
     body {
       font-family: Arial;
-      background: #111;
+      background: #0f0f0f;
       color: white;
       text-align: center;
       padding: 20px;
     }
 
-    input {
+    h1 { margin-bottom: 10px; }
+
+    input, textarea {
       padding: 8px;
       margin: 5px;
+      border-radius: 6px;
+      border: none;
     }
 
     textarea {
       width: 90%;
       height: 120px;
-      margin-top: 10px;
     }
 
     .card {
-      background: #222;
+      background: #1e1e1e;
       padding: 15px;
       margin: 10px auto;
       width: 320px;
-      border-radius: 10px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
     }
 
     button {
-      padding: 8px;
+      padding: 8px 12px;
       margin: 5px;
+      border: none;
+      border-radius: 8px;
       cursor: pointer;
+    }
+
+    .primary { background: #4CAF50; }
+    .secondary { background: #2196F3; }
+    .danger { background: #e53935; }
+
+    #status {
+      margin-top: 10px;
+      font-size: 14px;
+      opacity: 0.8;
     }
   </style>
 </head>
 
 <body>
 
-<h1>🎮 Games</h1>
+<h1>🎮 Game Platform</h1>
 
-<!-- AUTH UI -->
+<!-- ACCOUNT -->
 <div class="card">
   <h3>Account</h3>
 
@@ -54,9 +70,9 @@
 
   <br>
 
-  <button onclick="signUp()">Sign Up</button>
-  <button onclick="signIn()">Login</button>
-  <button onclick="logout()">Logout</button>
+  <button class="primary" onclick="signUp()">Sign Up</button>
+  <button class="secondary" onclick="signIn()">Login</button>
+  <button class="danger" onclick="logout()">Logout</button>
 
   <p id="status">Not logged in</p>
 </div>
@@ -66,12 +82,17 @@
   <h3>Upload Game</h3>
   <textarea id="code" placeholder="Paste HTML game here"></textarea>
   <br>
-  <button onclick="uploadGame()">Upload</button>
+  <button class="primary" onclick="uploadGame()">Upload</button>
 </div>
 
-<!-- GAME LIST -->
-<h2>Your Games</h2>
+<!-- USER GAMES -->
+<h2>👤 Your Games</h2>
 <div id="list"></div>
+
+<!-- PUBLIC GAMES -->
+<h2>🌍 Public Games</h2>
+<button class="secondary" onclick="loadAllGames()">Load Public Games</button>
+<div id="allGames"></div>
 
 <script>
 const supabaseClient = supabase.createClient(
@@ -83,40 +104,32 @@ let currentUser = null;
 
 /* ================= AUTH ================= */
 
-// SIGN UP
 async function signUp() {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
-  const { error } = await supabaseClient.auth.signUp({
-    email,
-    password
-  });
+  const { error } = await supabaseClient.auth.signUp({ email, password });
 
   if (error) alert(error.message);
-  else alert("Account created! Check email if required.");
+  else alert("Account created! Check your email.");
 }
 
-// LOGIN
 async function signIn() {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
   const { data, error } = await supabaseClient.auth.signInWithPassword({
-    email,
-    password
+    email, password
   });
 
-  if (error) {
-    alert(error.message);
-  } else {
+  if (error) alert(error.message);
+  else {
     currentUser = data.user;
     updateUI();
     loadGames();
   }
 }
 
-// LOGOUT
 async function logout() {
   await supabaseClient.auth.signOut();
   currentUser = null;
@@ -124,7 +137,6 @@ async function logout() {
   document.getElementById("list").innerHTML = "";
 }
 
-// CHECK USER ON LOAD
 async function checkUser() {
   const { data } = await supabaseClient.auth.getUser();
   currentUser = data.user;
@@ -133,7 +145,6 @@ async function checkUser() {
   if (currentUser) loadGames();
 }
 
-// UPDATE UI
 function updateUI() {
   document.getElementById("status").innerText =
     currentUser
@@ -143,12 +154,8 @@ function updateUI() {
 
 /* ================= GAMES ================= */
 
-// UPLOAD GAME
 async function uploadGame() {
-  if (!currentUser) {
-    alert("Login first!");
-    return;
-  }
+  if (!currentUser) return alert("Login first!");
 
   const code = document.getElementById("code").value;
   if (!code) return alert("No code!");
@@ -161,16 +168,12 @@ async function uploadGame() {
     user_id: currentUser.id
   }]);
 
-  if (error) {
-    alert("Upload failed");
-    return;
-  }
+  if (error) return alert("Upload failed");
 
   alert("Game uploaded!");
   loadGames();
 }
 
-// LOAD USER GAMES
 async function loadGames() {
   if (!currentUser) return;
 
@@ -195,7 +198,27 @@ async function loadGames() {
   });
 }
 
-// PLAY GAME
+async function loadAllGames() {
+  const { data } = await supabaseClient
+    .from("games")
+    .select("*");
+
+  const list = document.getElementById("allGames");
+  list.innerHTML = "";
+
+  data.forEach(g => {
+    const div = document.createElement("div");
+    div.className = "card";
+
+    div.innerHTML = `
+      <p><b>${g.id}</b></p>
+      <button onclick="play('${g.id}')">Play</button>
+    `;
+
+    list.appendChild(div);
+  });
+}
+
 function play(id) {
   window.location.href = "/play.html?id=" + id;
 }
