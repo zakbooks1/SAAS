@@ -63,6 +63,45 @@
       document.getElementById("output").innerText =
         "Processed: " + val.toUpperCase();
     }
+    
+    function convertEmbed() {
+  const embed = document.getElementById("embedInput").value;
+
+  const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Game</title>
+  <style>
+    body {
+      margin: 0;
+      background: black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+  </style>
+</head>
+
+<body>
+  <div>
+    ${embed}
+  </div>
+</body>
+</html>
+`;
+
+  document.getElementById("outputHTML").value = html;
+}
+
+function copyOutput() {
+  const out = document.getElementById("outputHTML");
+  out.select();
+  document.execCommand("copy");
+  alert("Copied!");
+}
+
   </script>
 
   <br>
