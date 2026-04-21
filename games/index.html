@@ -54,14 +54,16 @@
 <script>
 function uploadGame() {
   const code = document.getElementById("code").value;
-
   if (!code) return alert("No code!");
 
   let games = JSON.parse(localStorage.getItem("games") || "[]");
 
-  const id = Date.now();
+  const id = Math.random().toString(36).substring(2, 10);
 
-  games.push({ id, code });
+  games.push({
+    id,
+    code
+  });
 
   localStorage.setItem("games", JSON.stringify(games));
 
@@ -75,12 +77,15 @@ function loadGames() {
   list.innerHTML = "";
 
   games.forEach(g => {
+    const link = `${location.origin}/play.html?id=${g.id}`;
+
     const div = document.createElement("div");
     div.className = "card";
 
     div.innerHTML = `
-      <p>Game ID: ${g.id}</p>
-      <button onclick="play(${g.id})">Play</button>
+      <p><b>Game:</b> ${g.id}</p>
+      <button onclick="play('${g.id}')">Play</button>
+      <button onclick="copyLink('${link}')">Copy Link</button>
     `;
 
     list.appendChild(div);
@@ -89,6 +94,11 @@ function loadGames() {
 
 function play(id) {
   window.location.href = "/play.html?id=" + id;
+}
+
+function copyLink(link) {
+  navigator.clipboard.writeText(link);
+  alert("Link copied!");
 }
 
 loadGames();
