@@ -14,9 +14,15 @@
       padding: 20px;
     }
 
+    input {
+      padding: 8px;
+      margin: 5px;
+    }
+
     textarea {
       width: 90%;
       height: 120px;
+      margin-top: 10px;
     }
 
     .card {
@@ -28,8 +34,8 @@
     }
 
     button {
-      margin-top: 10px;
       padding: 8px;
+      margin: 5px;
       cursor: pointer;
     }
   </style>
@@ -39,13 +45,14 @@
 
 <h1>🎮 Games</h1>
 
-  <div id="auth">
+<!-- AUTH UI -->
+<div class="card">
   <h3>Account</h3>
 
   <input id="email" placeholder="Email">
   <input id="password" type="password" placeholder="Password">
 
-  <br><br>
+  <br>
 
   <button onclick="signUp()">Sign Up</button>
   <button onclick="signIn()">Login</button>
@@ -54,41 +61,123 @@
   <p id="status">Not logged in</p>
 </div>
 
-<textarea id="code" placeholder="Paste HTML game here"></textarea>
-<br>
-<button onclick="uploadGame()">Upload Game</button>
+<!-- UPLOAD -->
+<div class="card">
+  <h3>Upload Game</h3>
+  <textarea id="code" placeholder="Paste HTML game here"></textarea>
+  <br>
+  <button onclick="uploadGame()">Upload</button>
+</div>
 
-<h2>Cloud Games</h2>
+<!-- GAME LIST -->
+<h2>Your Games</h2>
 <div id="list"></div>
 
 <script>
-const supabase = supabase.createClient(
+const supabaseClient = supabase.createClient(
   "https://kruimxsgvsuguhwsqvlh.supabase.co",
   "sb_publishable_MkNjCO_f8HsHyMwzsMRzng_8mn0-1kd"
 );
 
-// Upload game
+let currentUser = null;
+
+/* ================= AUTH ================= */
+
+// SIGN UP
+async function signUp() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  const { error } = await supabaseClient.auth.signUp({
+    email,
+    password
+  });
+
+  if (error) alert(error.message);
+  else alert("Account created! Check email if required.");
+}
+
+// LOGIN
+async function signIn() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  const { data, error } = await supabaseClient.auth.signInWithPassword({
+    email,
+    password
+  });
+
+  if (error) {
+    alert(error.message);
+  } else {
+    currentUser = data.user;
+    updateUI();
+    loadGames();
+  }
+}
+
+// LOGOUT
+async function logout() {
+  await supabaseClient.auth.signOut();
+  currentUser = null;
+  updateUI();
+  document.getElementById("list").innerHTML = "";
+}
+
+// CHECK USER ON LOAD
+async function checkUser() {
+  const { data } = await supabaseClient.auth.getUser();
+  currentUser = data.user;
+  updateUI();
+
+  if (currentUser) loadGames();
+}
+
+// UPDATE UI
+function updateUI() {
+  document.getElementById("status").innerText =
+    currentUser
+      ? "Logged in: " + currentUser.email
+      : "Not logged in";
+}
+
+/* ================= GAMES ================= */
+
+// UPLOAD GAME
 async function uploadGame() {
+  if (!currentUser) {
+    alert("Login first!");
+    return;
+  }
+
   const code = document.getElementById("code").value;
   if (!code) return alert("No code!");
 
   const id = Math.random().toString(36).substring(2, 10);
 
-  const { error } = await supabase
-    .from("games")
-    .insert([{ id, code }]);
+  const { error } = await supabaseClient.from("games").insert([{
+    id,
+    code,
+    user_id: currentUser.id
+  }]);
 
-  if (error) return alert("Upload failed");
+  if (error) {
+    alert("Upload failed");
+    return;
+  }
 
-  alert("Uploaded!");
+  alert("Game uploaded!");
   loadGames();
 }
 
-// Load games
+// LOAD USER GAMES
 async function loadGames() {
-  const { data } = await supabase
+  if (!currentUser) return;
+
+  const { data } = await supabaseClient
     .from("games")
-    .select("*");
+    .select("*")
+    .eq("user_id", currentUser.id);
 
   const list = document.getElementById("list");
   list.innerHTML = "";
@@ -106,12 +195,14 @@ async function loadGames() {
   });
 }
 
-// Play game
+// PLAY GAME
 function play(id) {
   window.location.href = "/play.html?id=" + id;
 }
 
-loadGames();
+/* ================= INIT ================= */
+
+checkUser();
 </script>
 
 </body>
