@@ -12,12 +12,12 @@
 
 <iframe id="frame"></iframe>
 
-<script>
+  <script>
 const id = new URLSearchParams(location.search).get("id");
 
 let games = JSON.parse(localStorage.getItem("games") || "[]");
 
-let game = games.find(g => g.id == id);
+let game = games.find(g => g.id === id);
 
 if (game) {
   document.getElementById("frame").srcdoc = game.code;
