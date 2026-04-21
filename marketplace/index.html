@@ -1,130 +1,39 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Marketplace</title>
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-
-  <style>
-    body {
-      margin: 0;
-      font-family: system-ui;
-      background: #0b0b0f;
-      color: white;
-    }
-
-    .header {
-      padding: 20px;
-      border-bottom: 1px solid #222;
-      background: #12121a;
-    }
-
-    .container {
-      padding: 20px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 12px;
-    }
-
-    .card {
-      background: #161620;
-      border: 1px solid #2a2a2a;
-      border-radius: 14px;
-      padding: 12px;
-      transition: 0.2s;
-    }
-
-    .card:hover {
-      transform: translateY(-4px);
-      border-color: #444;
-    }
-
-    button {
-      padding: 8px;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      width: 100%;
-    }
-
-    .play { background: #4CAF50; color: white; }
-
-    .topbar {
-      display: flex;
-      gap: 10px;
-      padding: 10px 20px;
-      background: #111;
-    }
-
-    .navbtn {
-      background: #1b1b25;
-      border: none;
-      color: white;
-      padding: 10px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-  </style>
 </head>
 
-<body>
+<body style="background:#0b0b0f;color:white">
 
-<!-- NAV -->
-<div class="topbar">
-  <button class="navbtn" onclick="location.href='/'">🏠 Home</button>
-  <button class="navbtn" onclick="location.href='/games/index.html'">🎮 Games</button>
-  <button class="navbtn" onclick="location.href='/tools/index.html'">🛠 Tools</button>
-</div>
+<button onclick="location.href='/'">🏠 Home</button>
 
-<div class="header">
-  <h1>🛒 Marketplace</h1>
-  <p>Discover games from everyone</p>
-</div>
-
-<div class="container">
-  <div id="games" class="grid"></div>
-</div>
+<h1>Marketplace</h1>
+<div id="games"></div>
 
 <script>
-const supabaseClient = supabase.createClient(
-  "https://kruimxsgvsuguhwsqvlh.supabase.co",
-  "sb_publishable_MkNjCO_f8HsHyMwzsMRzng_8mn0-1kd"
-);
+const supabaseClient = supabase.createClient("https://kruimxsgvsuguhwsqvlh.supabase.co","sb_publishable_MkNjCO_f8HsHyMwzsMRzng_8mn0-1kd");
 
-function createCard(g) {
-  const div = document.createElement("div");
-  div.className = "card";
+async function load() {
+  const { data } = await supabaseClient.from("games").select("*");
 
-  div.innerHTML = `
-    <h3>🎮 Game</h3>
-    <p style="opacity:0.6">${g.id}</p>
-    <button class="play" onclick="play('${g.id}')">Play</button>
-  `;
+  const div = document.getElementById("games");
 
-  return div;
-}
-
-async function loadMarketplace() {
-  const { data } = await supabaseClient
-    .from("games")
-    .select("*");
-
-  const container = document.getElementById("games");
-  container.innerHTML = "";
-
-  data.reverse().forEach(g => {
-    container.appendChild(createCard(g));
+  data.forEach(g => {
+    div.innerHTML += `
+      <div>
+        ${g.id}
+        <button onclick="play('${g.id}')">Play</button>
+      </div>
+    `;
   });
 }
 
-function play(id) {
-  window.location.href = "/play.html?id=" + id;
+function play(id){
+  location.href="/play.html?id="+id;
 }
 
-loadMarketplace();
+load();
 </script>
 
 </body>
