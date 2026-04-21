@@ -1,219 +1,51 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Games</title>
-  <p style="opacity:0.7">
-  Build • Share • Play Games
-</p>
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-
-<style>
-body {
-  margin: 0;
-  font-family: system-ui, Arial;
-  background: #0b0b0f;
-  color: white;
-}
-
-/* TOP BAR */
-.topbar {
-  padding: 15px 20px;
-  background: #111;
-  border-bottom: 1px solid #222;
-}
-
-/* LAYOUT */
-.layout {
-  display: flex;
-  height: calc(100vh - 70px);
-}
-
-/* LEFT PANEL */
-.panel {
-  width: 320px;
-  padding: 15px;
-  background: #121218;
-  border-right: 1px solid #222;
-  overflow-y: auto;
-}
-
-/* MAIN AREA */
-.main {
-  flex: 1;
-  padding: 20px;
-  overflow-y: auto;
-}
-
-/* CARDS */
-.card {
-  background: #161620;
-  padding: 12px;
-  border-radius: 12px;
-  border: 1px solid #2a2a2a;
-  transition: 0.2s;
-}
-
-.card:hover {
-  transform: translateY(-3px);
-  border-color: #444;
-}
-
-/* GRID */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 10px;
-}
-
-/* INPUTS */
-input, textarea {
-  width: 100%;
-  padding: 10px;
-  margin: 6px 0;
-  border-radius: 8px;
-  border: none;
-  background: #1b1b25;
-  color: white;
-  outline: none;
-}
-
-textarea {
-  height: 120px;
-}
-
-/* BUTTONS */
-button {
-  padding: 10px;
-  margin: 5px 0;
-  width: 100%;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.primary { background: #4CAF50; color: white; }
-.secondary { background: #2196F3; color: white; }
-.danger { background: #ff4d4d; color: white; }
-
-/* TEXT */
-h1 { margin: 0; }
-h2 { margin-top: 10px; }
-</style>
-
+  <style>
+    body { margin:0; font-family:system-ui; background:#0b0b0f; color:white; }
+    .top { padding:10px; background:#111; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fill,200px); gap:10px; padding:20px; }
+    .card { background:#161620; padding:10px; border-radius:12px; }
+    textarea { width:90%; height:120px; }
+  </style>
 </head>
 
 <body>
 
-<div class="topbar">
-  <h1>🎮 Game Platform</h1>
-  <p id="status">Not logged in</p>
+<div class="top">
+  <button onclick="location.href='/'">🏠 Home</button>
 </div>
 
-<div class="layout">
+<h2>Upload Game</h2>
+<textarea id="code"></textarea>
+<br>
+<button onclick="uploadGame()">Upload</button>
 
-  <!-- LEFT PANEL -->
-  <div class="panel">
-    <h2>Account</h2>
-
-    <input id="email" placeholder="Email">
-    <input id="password" type="password" placeholder="Password">
-
-    <button class="primary" onclick="signUp()">Sign Up</button>
-    <button class="secondary" onclick="signIn()">Login</button>
-    <button class="danger" onclick="logout()">Logout</button>
-
-    <hr>
-
-    <h2>Upload Game</h2>
-    <textarea id="code" placeholder="Paste HTML game here"></textarea>
-    <button class="primary" onclick="uploadGame()">Upload</button>
-  </div>
-
-  <!-- MAIN CONTENT -->
-  <div class="main">
-
-    <h2>👤 Your Games</h2>
-    <div id="list" class="grid"></div>
-
-    <h2>🌍 Public Games</h2>
-    <button class="secondary" onclick="loadAllGames()">Load All</button>
-    <div id="allGames" class="grid"></div>
-
-  </div>
-
-</div>
-
-</body>
+<h2>Your Games</h2>
+<div id="list" class="grid"></div>
 
 <script>
 const supabaseClient = supabase.createClient(
-  "https://kruimxsgvsuguhwsqvlh.supabase.co",
-  "sb_publishable_MkNjCO_f8HsHyMwzsMRzng_8mn0-1kd"
+  "YOUR_URL",
+  "YOUR_KEY"
 );
 
 let currentUser = null;
 
-/* ================= AUTH ================= */
-
-async function signUp() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-
-  const { error } = await supabaseClient.auth.signUp({ email, password });
-
-  if (error) alert(error.message);
-  else alert("Account created! Check your email.");
-}
-
-async function signIn() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-
-  const { data, error } = await supabaseClient.auth.signInWithPassword({
-    email, password
-  });
-
-  if (error) alert(error.message);
-  else {
-    currentUser = data.user;
-    updateUI();
-    loadGames();
-  }
-}
-
-async function logout() {
-  await supabaseClient.auth.signOut();
-  currentUser = null;
-  updateUI();
-  document.getElementById("list").innerHTML = "";
-}
-
 async function checkUser() {
   const { data } = await supabaseClient.auth.getUser();
   currentUser = data.user;
-  updateUI();
-
   if (currentUser) loadGames();
 }
 
-function updateUI() {
-  document.getElementById("status").innerText =
-    currentUser
-      ? "Logged in: " + currentUser.email
-      : "Not logged in";
-}
-
-/* ================= GAMES ================= */
-
 async function uploadGame() {
-  if (!currentUser) return alert("Login first!");
+  if (!currentUser) return alert("Login first");
 
   const code = document.getElementById("code").value;
-  if (!code) return alert("No code!");
+  if (!code) return alert("No code");
 
-  const id = Math.random().toString(36).substring(2, 10);
+  const id = Math.random().toString(36).substring(2,9);
 
   const { error } = await supabaseClient.from("games").insert([{
     id,
@@ -221,15 +53,13 @@ async function uploadGame() {
     user_id: currentUser.id
   }]);
 
-  if (error) return alert("Upload failed");
+  if (error) return alert(error.message);
 
-  alert("Game uploaded!");
+  alert("Uploaded!");
   loadGames();
 }
 
 async function loadGames() {
-  if (!currentUser) return;
-
   const { data } = await supabaseClient
     .from("games")
     .select("*")
@@ -241,44 +71,20 @@ async function loadGames() {
   data.forEach(g => {
     const div = document.createElement("div");
     div.className = "card";
-
     div.innerHTML = `
-      <p><b>${g.id}</b></p>
+      <p>${g.id}</p>
       <button onclick="play('${g.id}')">Play</button>
     `;
-
-    list.appendChild(div);
-  });
-}
-
-async function loadAllGames() {
-  const { data } = await supabaseClient
-    .from("games")
-    .select("*");
-
-  const list = document.getElementById("allGames");
-  list.innerHTML = "";
-
-  data.forEach(g => {
-    const div = document.createElement("div");
-    div.className = "card";
-
-    div.innerHTML = `
-      <p><b>${g.id}</b></p>
-      <button onclick="play('${g.id}')">Play</button>
-    `;
-
     list.appendChild(div);
   });
 }
 
 function play(id) {
-  window.location.href = "/play.html?id=" + id;
+  location.href = "/play.html?id=" + id;
 }
-
-/* ================= INIT ================= */
 
 checkUser();
 </script>
 
+</body>
 </html>
