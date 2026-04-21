@@ -5,39 +5,83 @@
 
   <style>
     body {
-      font-family: Arial;
-      background: #0f0f0f;
+      margin: 0;
+      font-family: system-ui, Arial;
+      background: #0b0b0f;
       color: white;
-      text-align: center;
-      padding: 50px;
+      display: flex;
     }
 
-    button {
-      padding: 15px 25px;
-      margin: 10px;
+    /* SIDEBAR */
+    .sidebar {
+      width: 220px;
+      background: #12121a;
+      height: 100vh;
+      padding: 20px;
+      border-right: 1px solid #222;
+    }
+
+    .logo {
+      font-size: 20px;
+      margin-bottom: 20px;
+    }
+
+    .navbtn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      background: #1b1b25;
       border: none;
       border-radius: 10px;
+      color: white;
       cursor: pointer;
-      font-size: 16px;
+      text-align: left;
     }
 
-    .games { background: #4CAF50; }
-    .tools { background: #2196F3; }
+    .navbtn:hover {
+      background: #2a2a3a;
+    }
+
+    /* MAIN AREA */
+    .main {
+      flex: 1;
+      padding: 40px;
+    }
+
+    .card {
+      background: #161620;
+      padding: 20px;
+      border-radius: 14px;
+      border: 1px solid #2a2a2a;
+      max-width: 600px;
+    }
   </style>
 </head>
 
 <body>
 
-  <h1>🚀 My Platform</h1>
-  <p>Games + Tools</p>
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="logo">🚀 My Platform</div>
 
-  <button class="games" onclick="location.href='/games/index.html'">
-    🎮 Games
-  </button>
+    <button class="navbtn" onclick="location.href='/'">🏠 Home</button>
+    <button class="navbtn" onclick="location.href='/games/index.html'">🎮 Games</button>
+    <button class="navbtn" onclick="location.href='/tools/index.html'">🛠 Tools</button>
+  </div>
 
-  <button class="tools" onclick="location.href='/tools/index.html'">
-    🛠 Tools
-  </button>
+  <!-- MAIN -->
+  <div class="main">
+
+    <h1>Dashboard</h1>
+
+    <div class="card">
+      <h3>Welcome 👋</h3>
+      <p>This is your platform dashboard.</p>
+      <p>Use the sidebar to navigate.</p>
+    </div>
+
+  </div>
 
 </body>
 </html>
