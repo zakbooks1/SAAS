@@ -2,13 +2,21 @@
 <html>
 <head>
   <title>Games</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
   <style>
     body {
       font-family: Arial;
       background: #111;
       color: white;
       text-align: center;
-      padding: 30px;
+      padding: 20px;
+    }
+
+    textarea {
+      width: 90%;
+      height: 120px;
     }
 
     .card {
@@ -19,15 +27,9 @@
       border-radius: 10px;
     }
 
-    textarea {
-      width: 90%;
-      height: 120px;
-      margin-top: 10px;
-    }
-
     button {
-      padding: 10px;
       margin-top: 10px;
+      padding: 8px;
       cursor: pointer;
     }
   </style>
@@ -35,70 +37,63 @@
 
 <body>
 
-  <h1>🎮 Games</h1>
+<h1>🎮 Games</h1>
 
-  <div class="card">
-    <h3>Upload Game (HTML)</h3>
+<textarea id="code" placeholder="Paste HTML game here"></textarea>
+<br>
+<button onclick="uploadGame()">Upload Game</button>
 
-    <textarea id="code" placeholder="Paste HTML game here"></textarea>
-    <br>
-    <button onclick="uploadGame()">Upload</button>
-  </div>
-
-  <h2>My Games</h2>
-  <div id="list"></div>
-
-  <br>
-  <a href="/">⬅ Home</a>
+<h2>Cloud Games</h2>
+<div id="list"></div>
 
 <script>
-function uploadGame() {
+const supabase = supabase.createClient(
+  "YOUR_SUPABASE_URL",
+  "YOUR_SUPABASE_ANON_KEY"
+);
+
+// Upload game
+async function uploadGame() {
   const code = document.getElementById("code").value;
   if (!code) return alert("No code!");
 
-  let games = JSON.parse(localStorage.getItem("games") || "[]");
-
   const id = Math.random().toString(36).substring(2, 10);
 
-  games.push({
-    id,
-    code
-  });
+  const { error } = await supabase
+    .from("games")
+    .insert([{ id, code }]);
 
-  localStorage.setItem("games", JSON.stringify(games));
+  if (error) return alert("Upload failed");
 
+  alert("Uploaded!");
   loadGames();
 }
 
-function loadGames() {
-  let games = JSON.parse(localStorage.getItem("games") || "[]");
+// Load games
+async function loadGames() {
+  const { data } = await supabase
+    .from("games")
+    .select("*");
 
   const list = document.getElementById("list");
   list.innerHTML = "";
 
-  games.forEach(g => {
-    const link = `${location.origin}/play.html?id=${g.id}`;
-
+  data.forEach(g => {
     const div = document.createElement("div");
     div.className = "card";
 
     div.innerHTML = `
-      <p><b>Game:</b> ${g.id}</p>
+      <p><b>${g.id}</b></p>
       <button onclick="play('${g.id}')">Play</button>
-      <button onclick="copyLink('${link}')">Copy Link</button>
     `;
 
     list.appendChild(div);
   });
 }
 
+// Play game
 function play(id) {
   window.location.href = "/play.html?id=" + id;
-}
-
-function copyLink(link) {
-  navigator.clipboard.writeText(link);
-  alert("Link copied!");
 }
 
 loadGames();
