@@ -6,8 +6,8 @@
   <script src="/config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
-  <style>
-body {
+<style>
+body{
   margin:0;
   font-family:system-ui;
   background:#0a0f1c;
@@ -15,52 +15,39 @@ body {
   padding:20px;
 }
 
-.card {
+.card{
   background:#111827;
   border:1px solid #1f2937;
   padding:15px;
   border-radius:14px;
 }
-  </style>
+</style>
 </head>
 
 <body>
 
 <h1>👤 Profile</h1>
-
-<div class="card">
-  <p id="email">Loading...</p>
-</div>
+<div id="user"></div>
 
 <h2>Your Games</h2>
 <div id="games"></div>
 
 <script>
-const supabaseClient = supabase.createClient(
-  CONFIG.SUPABASE_URL,
-  CONFIG.SUPABASE_KEY
-);
+const supabaseClient = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
 
-async function load() {
-  const { data: userData } = await supabaseClient.auth.getUser();
-  const user = userData.user;
+async function load(){
+  const {data:userData}=await supabaseClient.auth.getUser();
+  const user=userData.user;
 
-  if (!user) location.href = "/auth.html";
+  if(!user) location.href="/auth.html";
 
-  document.getElementById("email").innerText = user.email;
+  document.getElementById("user").innerHTML=user.email;
 
-  const { data } = await supabaseClient
-    .from("games")
-    .select("*")
-    .eq("user_id", user.id);
+  const {data}=await supabaseClient.from("games").select("*").eq("user_id",user.id);
 
-  document.getElementById("games").innerHTML =
-    data.map(g => `
-      <div class="card">
-        <b>${g.id}</b>
-        <p>❤️ ${g.likes || 0}</p>
-      </div>
-    `).join("");
+  document.getElementById("games").innerHTML=data.map(g=>
+    `<div class="card">${g.id} ❤️ ${g.likes||0}</div>`
+  ).join("");
 }
 
 load();
