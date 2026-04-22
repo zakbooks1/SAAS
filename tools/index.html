@@ -1,52 +1,203 @@
 <!DOCTYPE html>
 <html>
 <head>
-<style>
-body { margin:0; display:flex; font-family:system-ui; background:#0b0b0f; color:white; }
+  <title>Tools</title>
 
-.sidebar { width:220px; background:#12121a; padding:20px; height:100vh; border-right:1px solid #222; }
+  <script src="/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
-.main { flex:1; padding:20px; }
+  <style>
+:root{
+  --bg:#0a0f1c;
+  --side:#0f172a;
+  --card:#111827;
+  --border:#1f2937;
+  --accent:#3b82f6;
+  --text:#e5e7eb;
+}
 
-.card { background:#161620; padding:15px; border-radius:14px; }
+body{
+  margin:0;
+  font-family:system-ui;
+  background:var(--bg);
+  color:var(--text);
+  display:flex;
+}
 
-textarea { width:100%; height:120px; }
+/* SIDEBAR */
+.sidebar{
+  width:220px;
+  background:var(--side);
+  height:100vh;
+  padding:20px;
+  border-right:1px solid var(--border);
+}
 
-button { padding:10px; margin-top:10px; }
-</style>
+.navbtn{
+  width:100%;
+  padding:12px;
+  margin:8px 0;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background:transparent;
+  color:white;
+  font-weight:700;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.navbtn:hover{
+  background:var(--card);
+  border-color:var(--accent);
+  transform:translateX(6px);
+}
+
+/* MAIN */
+.main{
+  flex:1;
+  padding:20px;
+}
+
+/* GRID */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:12px;
+}
+
+/* TOOL CARD */
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:14px;
+  font-weight:700;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.card:hover{
+  transform:translateY(-6px) scale(1.02);
+  border-color:var(--accent);
+}
+
+/* MODAL */
+#modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.8);
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+}
+
+#box{
+  width:90%;
+  height:90%;
+  background:#0b1220;
+  border:1px solid #1f2937;
+  border-radius:12px;
+  padding:20px;
+  overflow:auto;
+}
+
+.close{
+  position:absolute;
+  top:15px;
+  right:20px;
+  background:#3b82f6;
+  border:none;
+  padding:8px 12px;
+  border-radius:8px;
+  font-weight:700;
+  cursor:pointer;
+}
+  </style>
 </head>
 
 <body>
 
+<!-- SIDEBAR -->
 <div class="sidebar">
-  <button onclick="location.href='/'">🏠 Home</button>
-  <button onclick="location.href='/games/index.html'">🎮 Games</button>
+  <h3>🛠 Tools</h3>
+
+  <button class="navbtn" onclick="location.href='/'">🏠 Home</button>
+  <button class="navbtn" onclick="location.href='/games/index.html'">🎮 Games</button>
+  <button class="navbtn" onclick="location.href='/marketplace/index.html'">🛒 Marketplace</button>
+  <button class="navbtn" onclick="location.href='/ai.html'">🧠 AI Generator</button>
 </div>
 
+<!-- MAIN -->
 <div class="main">
+  <h1>🛠 Tools</h1>
 
-<div class="card">
-<h2>Embed → HTML</h2>
+  <div class="grid">
 
-<textarea id="embed"></textarea>
-<button onclick="convert()">Convert</button>
+    <div class="card" onclick="openTool('embed')">
+      🔗 Embed Game Converter
+    </div>
 
-<textarea id="out"></textarea>
+    <div class="card" onclick="openTool('html')">
+      🧾 HTML Runner
+    </div>
+
+    <div class="card" onclick="openTool('notes')">
+      📝 Notes Tool
+    </div>
+
+  </div>
 </div>
 
+<!-- MODAL -->
+<div id="modal">
+  <div id="box"></div>
 </div>
+
+<button class="close" onclick="closeTool()">✖</button>
 
 <script>
-function convert(){
-  const e=document.getElementById("embed").value;
+function openTool(type){
+  document.getElementById("modal").style.display="flex";
 
-  document.getElementById("out").value=
-`<!DOCTYPE html>
-<html>
-<body style="margin:0;background:black;">
-${e}
-</body>
-</html>`;
+  if(type==="embed"){
+    document.getElementById("box").innerHTML=`
+      <h2>Embed Tool</h2>
+      <textarea id="embedInput" style="width:100%;height:120px;background:#111827;color:white;border:1px solid #1f2937"></textarea>
+      <button onclick="runEmbed()">Run</button>
+      <div id="out"></div>
+    `;
+  }
+
+  if(type==="html"){
+    document.getElementById("box").innerHTML=`
+      <h2>HTML Runner</h2>
+      <textarea id="htmlInput" style="width:100%;height:120px;background:#111827;color:white;border:1px solid #1f2937"></textarea>
+      <button onclick="runHTML()">Run</button>
+      <iframe id="frame" style="width:100%;height:60vh;border:none;margin-top:10px"></iframe>
+    `;
+  }
+
+  if(type==="notes"){
+    document.getElementById("box").innerHTML=`
+      <h2>Notes</h2>
+      <textarea style="width:100%;height:60vh;background:#111827;color:white;border:1px solid #1f2937"></textarea>
+    `;
+  }
+}
+
+function runHTML(){
+  const code=document.getElementById("htmlInput").value;
+  document.getElementById("frame").srcdoc=code;
+}
+
+function runEmbed(){
+  const code=document.getElementById("embedInput").value;
+  document.getElementById("out").innerHTML=code;
+}
+
+function closeTool(){
+  document.getElementById("modal").style.display="none";
 }
 </script>
 
