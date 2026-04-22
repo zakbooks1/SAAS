@@ -43,6 +43,22 @@ textarea { width:100%; height:120px; background:#0b1220; color:white; border:1px
 </div>
 
 <script>
+
+  const supabaseClient = supabase.createClient(
+  CONFIG.SUPABASE_URL,
+  CONFIG.SUPABASE_KEY
+);
+
+async function getUser() {
+  const { data } = await supabaseClient.auth.getUser();
+  return data.user;
+}
+
+async function requireAuth() {
+  const user = await getUser();
+  if (!user) location.href = "/auth.html";
+  return user;
+}
 const supabaseClient = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
 
 let user=null;
