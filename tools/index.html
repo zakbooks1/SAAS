@@ -3,114 +3,22 @@
 <head>
   <title>Tools</title>
 
-  <script src="/config.js"></script>
-  <script src="/plugin-core.js"></script>
+  <script src="/app-shell.js"></script>
 
   <style>
-:root{
-  --bg:#0a0f1c;
-  --side:#0f172a;
-  --card:#111827;
-  --border:#1f2937;
-  --accent:#3b82f6;
-  --text:#e5e7eb;
-}
-
 body{
   margin:0;
   font-family:system-ui;
-  background:var(--bg);
-  color:var(--text);
-  display:flex;
-}
-
-/* SIDEBAR */
-.sidebar{
-  width:220px;
-  background:var(--side);
-  height:100vh;
-  padding:20px;
-  border-right:1px solid var(--border);
-}
-
-.navbtn{
-  width:100%;
-  padding:12px;
-  margin:8px 0;
-  border-radius:10px;
-  border:1px solid var(--border);
-  background:transparent;
+  background:#0a0f1c;
   color:white;
-  font-weight:700;
-  cursor:pointer;
-  transition:.2s;
 }
 
-.navbtn:hover{
-  background:var(--card);
-  border-color:var(--accent);
-  transform:translateX(6px);
-}
-
-/* MAIN */
-.main{
-  flex:1;
-  padding:20px;
-}
-
-/* GRID */
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
-  gap:12px;
-}
-
-/* CARD */
 .card{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:14px;
-  padding:14px;
-  cursor:pointer;
-  font-weight:700;
-  transition:.2s;
-}
-
-.card:hover{
-  transform:translateY(-6px) scale(1.02);
-  border-color:var(--accent);
-}
-
-/* MODAL */
-#modal{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.75);
-  justify-content:center;
-  align-items:center;
-  z-index:9999;
-}
-
-#box{
-  width:90%;
-  height:90%;
-  background:#0b1220;
-  border:1px solid #1f2937;
+  background:#111827;
+  margin:10px;
+  padding:12px;
   border-radius:12px;
-  padding:20px;
-  overflow:auto;
-}
-
-.close{
-  position:absolute;
-  top:15px;
-  right:20px;
-  background:#3b82f6;
-  border:none;
-  padding:8px 12px;
-  border-radius:8px;
-  font-weight:700;
+  border:1px solid #1f2937;
   cursor:pointer;
 }
   </style>
@@ -118,112 +26,13 @@ body{
 
 <body>
 
-<div class="sidebar">
-  <h3>🛠 Plugins</h3>
-
-  <button class="navbtn" onclick="location.href='/'">🏠 Home</button>
-  <button class="navbtn" onclick="openTool('embed')">🔗 Embed API Tool</button>
-  <button class="navbtn" onclick="openTool('weather')">🌦 Weather API</button>
-  <button class="navbtn" onclick="openTool('ai')">🧠 AI API Tool</button>
-</div>
-
-<div class="main">
-  <h1>🛠 Plugin Tools System</h1>
-
-  <div class="grid">
-
-    <div class="card" onclick="openTool('embed')">
-      🔗 Embed Plugin
-    </div>
-
-    <div class="card" onclick="openTool('weather')">
-      🌦 Weather Plugin
-    </div>
-
-    <div class="card" onclick="openTool('ai')">
-      🧠 AI Plugin
-    </div>
-
-  </div>
-</div>
-
-<!-- MODAL -->
-<div id="modal">
-  <div id="box"></div>
-</div>
-
-<button class="close" onclick="closeTool()">✖</button>
-
 <script>
-function openTool(type){
-  PluginCore.playSoftSound(); // 🔊 soft transition sound
-
-  document.getElementById("modal").style.display="flex";
-
-  if(type==="embed"){
-    document.getElementById("box").innerHTML=`
-      <h2>🔗 Embed Tool</h2>
-      <textarea id="input" style="width:100%;height:120px"></textarea>
-      <button onclick="runEmbed()">Run</button>
-      <div id="out"></div>
-    `;
-  }
-
-  if(type==="weather"){
-    document.getElementById("box").innerHTML=`
-      <h2>🌦 Weather Plugin</h2>
-      <input id="city" placeholder="City">
-      <button onclick="getWeather()">Fetch</button>
-      <pre id="out"></pre>
-    `;
-  }
-
-  if(type==="ai"){
-    document.getElementById("box").innerHTML=`
-      <h2>🧠 AI Plugin (mock API)</h2>
-      <input id="prompt" placeholder="Ask something">
-      <button onclick="runAI()">Run</button>
-      <pre id="out"></pre>
-    `;
-  }
-}
-
-function closeTool(){
-  PluginCore.playSoftSound();
-  document.getElementById("modal").style.display="none";
-}
-
-/* EMBED */
-function runEmbed(){
-  document.getElementById("out").innerHTML =
-    document.getElementById("input").value;
-}
-
-/* WEATHER API PLUGIN */
-async function getWeather(){
-  const city = document.getElementById("city").value;
-
-  const data = await PluginCore.request(
-    `https://api.weatherapi.com/v1/current.json?key=demo&q=${city}`
-  );
-
-  document.getElementById("out").innerText =
-    JSON.stringify(data, null, 2);
-}
-
-/* AI PLUGIN (mock example) */
-async function runAI(){
-  const prompt = document.getElementById("prompt").value;
-
-  const response = await PluginCore.request(
-    "https://api.publicapis.org/entries"
-  );
-
-  document.getElementById("out").innerText =
-    "AI Response (mock): " + prompt + "\n\n" +
-    JSON.stringify(response.entries?.slice(0,2), null, 2);
-}
+createShell("Tools");
 </script>
+
+<div class="card" onclick="alert('Embed tool')">🔗 Embed Tool</div>
+<div class="card" onclick="alert('HTML runner')">🧾 HTML Runner</div>
+<div class="card" onclick="location.href='/ai.html'">🧠 AI Tool</div>
 
 </body>
 </html>
