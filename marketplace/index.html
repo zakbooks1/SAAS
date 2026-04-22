@@ -5,9 +5,9 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 </head>
 
-<body style="background:#0a0f1c;color:white;font-family:system-ui;margin:0;padding:20px">
+<body style="background:#0a0f1c;color:white;font-family:system-ui;padding:20px">
 
-<h1>Marketplace</h1>
+<h1>🛒 Marketplace</h1>
 
 <div id="games"></div>
 
@@ -17,13 +17,14 @@ const supabaseClient = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABAS
 async function load(){
   const {data}=await supabaseClient.from("games").select("*");
 
-  document.getElementById("games").innerHTML=
-    data.map(g=>`
-      <div style="padding:10px;background:#111827;margin:10px;border-radius:10px">
-        ${g.id}
+  document.getElementById("games").innerHTML=data
+    .sort((a,b)=>(b.likes||0)-(a.likes||0))
+    .map(g=>
+      `<div style="padding:10px;background:#111827;margin:10px;border-radius:10px">
+        ${g.id} ❤️ ${g.likes||0}
         <button onclick="location.href='/play.html?id=${g.id}'">Play</button>
-      </div>
-    `).join("");
+      </div>`
+    ).join("");
 }
 
 load();
