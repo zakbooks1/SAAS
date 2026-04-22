@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AI Game Generator</title>
+
+  <script src="/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+  <style>
+:root{
+  --bg:#0a0f1c;
+  --card:#111827;
+  --border:#1f2937;
+  --accent:#3b82f6;
+  --text:#e5e7eb;
+}
+
+body{
+  margin:0;
+  font-family:system-ui;
+  background:var(--bg);
+  color:var(--text);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+
+.box{
+  width:500px;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:20px;
+  animation:fadeIn .3s ease;
+}
+
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(10px);}
+  to{opacity:1;transform:translateY(0);}
+}
+
+input, textarea{
+  width:100%;
+  padding:12px;
+  margin:10px 0;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background:#0b1220;
+  color:white;
+}
+
+button{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:700;
+  background:var(--accent);
+  color:#0b1220;
+}
+
+small{
+  opacity:0.7;
+}
+  </style>
+</head>
+
+<body>
+
+<div class="box">
+  <h1>🧠 AI Game Generator</h1>
+
+  <small>Type a game idea and it will generate playable HTML</small>
+
+  <input id="prompt" placeholder="e.g. clicker game, runner game, shooter">
+
+  <button onclick="generate()">Generate Game</button>
+
+  <p id="status"></p>
+</div>
+
+<script>
+const supabaseClient = supabase.createClient(
+  CONFIG.SUPABASE_URL,
+  CONFIG.SUPABASE_KEY
+);
+
+async function generate(){
+  const prompt = document.getElementById("prompt").value;
+  document.getElementById("status").innerText = "Generating...";
+
+  const { data: userData } = await supabaseClient.auth.getUser();
+  const user = userData.user;
+
+  if(!user){
+    alert("You must log in first");
+    location.href="/auth.html";
+    return;
+  }
+
+  const id = Math.random().toString(36).slice(2,9);
+
+  const gameHTML = createGame(prompt);
+
+  await supabaseClient.from("games").insert([{
+    id,
+    code: gameHTML,
+    user_id: user.id,
+    likes: 0
+  }]);
+
+  document.getElementById("status").innerText =
+    "Game created! Redirecting...";
+
+  setTimeout(()=>{
+    location.href="/games/index.html";
+  },800);
+}
+
+/* SIMPLE AI GAME GENERATOR */
+function createGame(prompt){
+
+  prompt = prompt.toLowerCase();
+
+  if(prompt.includes("click")){
+    return `
+<html>
+<body style="margin:0;display:flex;justify-content:center;align-items:center;height:100vh;background:#000;color:white;font-family:system-ui">
+  <button onclick="this.innerText='Clicked!'" style="padding:20px;font-size:22px">
+    Click Me
+  </button>
+</body>
+</html>`;
+  }
+
+  if(prompt.includes("runner")){
+    return `
+<html>
+<body style="margin:0;background:#111;color:white;display:flex;justify-content:center;align-items:center;height:100vh;font-family:system-ui">
+  <h1>🏃 AI Runner Game</h1>
+  <p>Jump over obstacles (demo base)</p>
+</body>
+</html>`;
+  }
+
+  if(prompt.includes("shooter")){
+    return `
+<html>
+<body style="margin:0;background:black;color:white;display:flex;justify-content:center;align-items:center;height:100vh;font-family:system-ui">
+  <h1>🔫 Shooter Game</h1>
+  <p>AI generated shooter base</p>
+</body>
+</html>`;
+  }
+
+  return `
+<html>
+<body style="margin:0;background:#0a0f1c;color:white;display:flex;justify-content:center;align-items:center;height:100vh;font-family:system-ui">
+  <h1>${prompt}</h1>
+  <p>AI generated game placeholder</p>
+</body>
+</html>`;
+}
+</script>
+
+</body>
+</html>
