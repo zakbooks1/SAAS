@@ -1,25 +1,60 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <script src="/config.js"></script>
+  <title>Games</title>
+
+  <script src="/app-shell.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+  <style>
+body{
+  margin:0;
+  font-family:system-ui;
+  background:#0a0f1c;
+  color:white;
+}
+
+.card{
+  background:#111827;
+  border:1px solid #1f2937;
+  margin:10px;
+  padding:12px;
+  border-radius:12px;
+}
+
+button{
+  padding:8px 10px;
+  border-radius:8px;
+  border:none;
+  background:#3b82f6;
+  cursor:pointer;
+}
+  </style>
 </head>
 
-<body style="background:#0a0f1c;color:white;font-family:system-ui;padding:20px">
+<body>
 
-<h1>🎮 Games</h1>
+<script>
+createShell("Games");
+const supabaseClient = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
+</script>
 
-<textarea id="code" placeholder="paste html game"></textarea>
-<button onclick="upload()">Upload</button>
+<textarea id="code" placeholder="paste game html"></textarea>
+<button onclick="upload()">Upload Game</button>
 
 <div id="list"></div>
 
-<script>
-const supabaseClient = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
+<!-- MODAL -->
+<div id="gameModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:9999;">
+  <div style="width:90%;height:90%;background:#0b1220;margin:auto;position:relative;border-radius:12px;">
+    <button onclick="closeGame()" style="position:absolute;right:10px;top:10px;">✖</button>
+    <div id="gameFrame" style="width:100%;height:100%;"></div>
+  </div>
+</div>
 
+<script>
 async function upload(){
   const { data: user } = await supabaseClient.auth.getUser();
-
   const id = Math.random().toString(36).slice(2,9);
 
   await supabaseClient.from("games").insert([{
@@ -37,21 +72,23 @@ async function load(){
 
   document.getElementById("list").innerHTML =
     data.map(g => `
-      <div style="margin:10px;padding:10px;background:#111827;border-radius:10px">
-        <b>${g.id}</b> ❤️ ${g.likes || 0}
+      <div class="card">
+        <b>${g.id}</b>
         <button onclick="play('${g.id}')">Play</button>
       </div>
     `).join("");
 }
 
 async function play(id){
-  const { data } = await supabaseClient
-    .from("games")
-    .select("*")
-    .eq("id", id)
-    .single();
+  const { data } = await supabaseClient.from("games").select("*").eq("id",id).single();
 
-  window.parent.openGame(data.code);
+  document.getElementById("gameModal").style.display="block";
+  document.getElementById("gameFrame").innerHTML =
+    `<iframe srcdoc="${data.code}" style="width:100%;height:100%;border:none;"></iframe>`;
+}
+
+function closeGame(){
+  document.getElementById("gameModal").style.display="none";
 }
 
 load();
