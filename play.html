@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+</head>
+
+<body style="margin:0;background:black;color:white;font-family:system-ui">
+
+<div id="game"></div>
+
+<script>
+const supabaseClient = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
+
+const id=new URLSearchParams(location.search).get("id");
+
+async function load(){
+  const {data}=await supabaseClient.from("games").select("*").eq("id",id).single();
+  document.getElementById("game").innerHTML=data.code;
+}
+
+load();
+</script>
+
+</body>
+</html>
