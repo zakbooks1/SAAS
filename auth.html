@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Auth</title>
+
+  <script src="/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+  <style>
+body {
+  margin:0;
+  font-family:system-ui;
+  background:#0a0f1c;
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+
+.box {
+  width:340px;
+  background:#111827;
+  border:1px solid #1f2937;
+  border-radius:14px;
+  padding:20px;
+}
+
+input {
+  width:100%;
+  padding:12px;
+  margin:8px 0;
+  border-radius:10px;
+  border:1px solid #1f2937;
+  background:#0b1220;
+  color:white;
+}
+
+button {
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:700;
+  background:#3b82f6;
+  color:#0b1220;
+}
+
+.small {
+  text-align:center;
+  margin-top:10px;
+  opacity:0.7;
+  cursor:pointer;
+}
+  </style>
+</head>
+
+<body>
+
+<div class="box">
+  <h2 id="title">Login</h2>
+
+  <input id="email" placeholder="email">
+  <input id="password" type="password" placeholder="password">
+
+  <button onclick="submit()">Continue</button>
+
+  <div class="small" onclick="toggle()">
+    Switch mode
+  </div>
+</div>
+
+<script>
+const supabaseClient = supabase.createClient(
+  CONFIG.SUPABASE_URL,
+  CONFIG.SUPABASE_KEY
+);
+
+let mode = "login";
+
+function toggle() {
+  mode = mode === "login" ? "signup" : "login";
+  document.getElementById("title").innerText =
+    mode === "login" ? "Login" : "Signup";
+}
+
+async function submit() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  if (!email || !password) return alert("Fill all fields");
+
+  if (mode === "signup") {
+    const { error } = await supabaseClient.auth.signUp({ email, password });
+    if (error) return alert(error.message);
+    alert("Signup success");
+  }
+
+  if (mode === "login") {
+    const { error } = await supabaseClient.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if (error) return alert(error.message);
+
+    location.href = "/";
+  }
+}
+</script>
+
+</body>
+</html>
