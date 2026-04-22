@@ -1,51 +1,41 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
 <style>
-body { margin:0; display:flex; font-family:system-ui; background:#0b0b0f; color:white; }
+body { margin:0; font-family:system-ui; background:#0a0f1c; color:#e5e7eb; display:flex; }
 
-.sidebar { width:220px; background:#12121a; padding:20px; height:100vh; border-right:1px solid #222; }
-.navbtn { display:block; width:100%; padding:12px; margin:8px 0; background:#1b1b25; border:none; border-radius:10px; color:white; cursor:pointer; }
-.navbtn:hover { background:#2a2a3a; }
+.sidebar { width:220px; background:#0f172a; padding:20px; height:100vh; border-right:1px solid #1f2937; }
+
+.navbtn { display:block; width:100%; margin:8px 0; padding:12px; border:1px solid #1f2937; background:transparent; color:white; border-radius:10px; font-weight:700; }
 
 .main { flex:1; padding:20px; }
 
 .grid { display:grid; grid-template-columns:repeat(auto-fill,200px); gap:12px; }
 
-.card {
-  background:#161620;
-  padding:12px;
-  border-radius:14px;
-  border:1px solid #2a2a2a;
-  transition:.2s;
-}
+.card { background:#111827; padding:12px; border-radius:14px; border:1px solid #1f2937; }
 
-.card:hover { transform:translateY(-4px); border-color:#444; }
+button { padding:10px; border:none; border-radius:10px; cursor:pointer; font-weight:700; }
 
-textarea { width:100%; height:120px; }
-
-button { padding:10px; border:none; border-radius:10px; cursor:pointer; margin-top:5px; }
-
-.primary { background:#4CAF50; color:white; }
+.primary { background:#3b82f6; color:#0b1220; }
+textarea { width:100%; height:120px; background:#0b1220; color:white; border:1px solid #1f2937; border-radius:10px; }
 </style>
 </head>
 
 <body>
 
 <div class="sidebar">
-  <h3>🚀 Platform</h3>
   <button class="navbtn" onclick="location.href='/'">🏠 Home</button>
   <button class="navbtn" onclick="location.href='/marketplace/index.html'">🛒 Marketplace</button>
-  <button class="navbtn" onclick="location.href='/tools/index.html'">🛠 Tools</button>
 </div>
 
 <div class="main">
 
 <h2>Upload Game</h2>
 <textarea id="code"></textarea>
-<button class="primary" onclick="uploadGame()">Upload</button>
+<button class="primary" onclick="upload()">Upload</button>
 
 <h2>Your Games</h2>
 <div id="list" class="grid"></div>
@@ -53,58 +43,44 @@ button { padding:10px; border:none; border-radius:10px; cursor:pointer; margin-t
 </div>
 
 <script>
-const supabaseClient = supabase.createClient("https://kruimxsgvsuguhwsqvlh.supabase.co","sb_publishable_MkNjCO_f8HsHyMwzsMRzng_8mn0-1kd");
+const supabaseClient = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
 
-let currentUser=null;
+let user=null;
 
-async function checkUser(){
+async function init(){
   const {data}=await supabaseClient.auth.getUser();
-  currentUser=data.user;
-  if(currentUser) loadGames();
+  user=data.user;
+  load();
 }
 
-async function uploadGame(){
-  if(!currentUser) return alert("Login first");
+async function upload(){
+  if(!user) return alert("login");
 
   const code=document.getElementById("code").value;
-  if(!code) return alert("No code");
+  const id=Math.random().toString(36).slice(2,9);
 
-  const id=Math.random().toString(36).substring(2,9);
+  await supabaseClient.from("games").insert([{id,code,user_id:user.id}]);
 
-  const {error}=await supabaseClient.from("games").insert([{id,code,user_id:currentUser.id}]);
-
-  if(error) return alert(error.message);
-
-  loadGames();
+  load();
 }
 
-function createCard(g){
-  const div=document.createElement("div");
-  div.className="card";
-
-  div.innerHTML=`
-    <h3>🎮 Game</h3>
-    <p>${g.id}</p>
-    <button class="primary" onclick="play('${g.id}')">Play</button>
-  `;
-
-  return div;
-}
-
-async function loadGames(){
-  const {data}=await supabaseClient.from("games").select("*").eq("user_id",currentUser.id);
+async function load(){
+  const {data}=await supabaseClient.from("games").select("*").eq("user_id",user.id);
 
   const list=document.getElementById("list");
   list.innerHTML="";
 
-  data.forEach(g=>list.appendChild(createCard(g)));
+  data.forEach(g=>{
+    list.innerHTML+=`
+      <div class="card">
+        <p>${g.id}</p>
+        <button onclick="location.href='/play.html?id=${g.id}'">Play</button>
+      </div>
+    `;
+  });
 }
 
-function play(id){
-  location.href="/play.html?id="+id;
-}
-
-checkUser();
+init();
 </script>
 
 </body>
