@@ -10,6 +10,22 @@
 <div id="game"></div>
 
 <script>
+
+  const supabaseClient = supabase.createClient(
+  CONFIG.SUPABASE_URL,
+  CONFIG.SUPABASE_KEY
+);
+
+async function getUser() {
+  const { data } = await supabaseClient.auth.getUser();
+  return data.user;
+}
+
+async function requireAuth() {
+  const user = await getUser();
+  if (!user) location.href = "/auth.html";
+  return user;
+}
 const supabaseClient = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
 
 const id=new URLSearchParams(location.search).get("id");
