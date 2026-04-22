@@ -1,80 +1,37 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Auth</title>
-
   <script src="/config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-
-<style>
-body{
-  margin:0;
-  font-family:system-ui;
-  background:#0a0f1c;
-  color:white;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
-}
-
-.box{
-  width:340px;
-  background:#111827;
-  border:1px solid #1f2937;
-  padding:20px;
-  border-radius:14px;
-}
-
-input{
-  width:100%;
-  margin:8px 0;
-  padding:12px;
-  border-radius:10px;
-  border:1px solid #1f2937;
-  background:#0b1220;
-  color:white;
-}
-
-button{
-  width:100%;
-  padding:12px;
-  border:none;
-  border-radius:10px;
-  background:#3b82f6;
-  font-weight:700;
-  cursor:pointer;
-}
-</style>
 </head>
 
-<body>
+<body style="background:#0a0f1c;color:white;font-family:system-ui;display:flex;justify-content:center;align-items:center;height:100vh">
 
-<div class="box">
-  <h2 id="title">Login</h2>
+<div style="background:#111827;padding:20px;border-radius:14px;width:300px">
 
-  <input id="email" placeholder="email">
-  <input id="password" type="password" placeholder="password">
+<h2>Login</h2>
 
-  <button onclick="submit()">Continue</button>
+<input id="email" placeholder="email" style="width:100%;padding:10px;margin:5px">
+<input id="password" type="password" placeholder="password" style="width:100%;padding:10px;margin:5px">
+
+<button onclick="login()" style="width:100%;padding:10px;background:#3b82f6;border:none;color:white">Continue</button>
+
 </div>
 
 <script>
 const supabaseClient = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
-let mode="login";
 
-async function submit(){
-  const email=document.getElementById("email").value;
-  const password=document.getElementById("password").value;
+async function login(){
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
 
-  if(mode==="signup"){
-    await supabaseClient.auth.signUp({email,password});
-    alert("Signed up!");
-  } else {
-    const {error}=await supabaseClient.auth.signInWithPassword({email,password});
-    if(error) return alert(error.message);
-    location.href="/";
-  }
+  const { error } = await supabaseClient.auth.signInWithPassword({
+    email, password
+  });
+
+  if(error) return alert(error.message);
+
+  location.href = "/";
 }
 </script>
 
