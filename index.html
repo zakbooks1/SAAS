@@ -6,62 +6,47 @@
   <script src="/config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
-  <style>
-:root {
+<style>
+:root{
   --bg:#0a0f1c;
-  --sidebar:#0f172a;
+  --side:#0f172a;
   --card:#111827;
   --border:#1f2937;
   --accent:#3b82f6;
-  --accent2:#60a5fa;
   --text:#e5e7eb;
 }
 
-body {
+body{
   margin:0;
   font-family:system-ui;
   background:var(--bg);
   color:var(--text);
   display:flex;
-  font-weight:600;
-  animation:fadeIn .35s ease;
 }
 
-@keyframes fadeIn {
-  from{opacity:0;transform:translateY(10px);}
-  to{opacity:1;transform:translateY(0);}
-}
-
-.sidebar {
+.sidebar{
   width:220px;
-  background:var(--sidebar);
-  padding:20px;
+  background:var(--side);
   height:100vh;
+  padding:20px;
   border-right:1px solid var(--border);
 }
 
-.navbtn {
+.navbtn{
   display:block;
   width:100%;
-  padding:12px;
   margin:8px 0;
+  padding:12px;
   background:transparent;
   border:1px solid var(--border);
   border-radius:10px;
-  color:var(--text);
-  cursor:pointer;
+  color:white;
   font-weight:700;
-  transition:.2s;
+  cursor:pointer;
 }
 
-.navbtn:hover {
-  background:var(--card);
-  border-color:var(--accent);
-  transform:translateX(6px);
-}
-
-.main { flex:1; padding:20px; }
-  </style>
+.main{flex:1;padding:20px;}
+</style>
 </head>
 
 <body>
@@ -71,8 +56,8 @@ body {
   <button class="navbtn" onclick="location.href='/'">🏠 Home</button>
   <button class="navbtn" onclick="location.href='/games/index.html'">🎮 Games</button>
   <button class="navbtn" onclick="location.href='/marketplace/index.html'">🛒 Marketplace</button>
-  <button class="navbtn" onclick="location.href='/tools/index.html'">🛠 Tools</button>
-  <div id="userBox" style="margin-top:10px; font-size:12px; opacity:0.8;"></div>
+  <button class="navbtn" onclick="location.href='/profile.html'">👤 Profile</button>
+  <button class="navbtn" onclick="location.href='/auth.html'">🔐 Login</button>
 </div>
 
 <div class="main">
