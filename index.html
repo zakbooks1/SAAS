@@ -3,40 +3,64 @@
 <head>
   <title>Platform</title>
 
+  <script src="/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
   <style>
-    body { margin:0; display:flex; font-family:system-ui; background:#0b0b0f; color:white; }
+:root {
+  --bg:#0a0f1c;
+  --sidebar:#0f172a;
+  --card:#111827;
+  --border:#1f2937;
+  --accent:#3b82f6;
+  --accent2:#60a5fa;
+  --text:#e5e7eb;
+}
 
-    .sidebar {
-      width:220px;
-      background:#12121a;
-      padding:20px;
-      height:100vh;
-      border-right:1px solid #222;
-    }
+body {
+  margin:0;
+  font-family:system-ui;
+  background:var(--bg);
+  color:var(--text);
+  display:flex;
+  font-weight:600;
+  animation:fadeIn .35s ease;
+}
 
-    .navbtn {
-      display:block;
-      width:100%;
-      padding:12px;
-      margin:8px 0;
-      background:#1b1b25;
-      border:none;
-      border-radius:10px;
-      color:white;
-      cursor:pointer;
-    }
+@keyframes fadeIn {
+  from{opacity:0;transform:translateY(10px);}
+  to{opacity:1;transform:translateY(0);}
+}
 
-    .navbtn:hover { background:#2a2a3a; }
+.sidebar {
+  width:220px;
+  background:var(--sidebar);
+  padding:20px;
+  height:100vh;
+  border-right:1px solid var(--border);
+}
 
-    .main { flex:1; padding:30px; }
+.navbtn {
+  display:block;
+  width:100%;
+  padding:12px;
+  margin:8px 0;
+  background:transparent;
+  border:1px solid var(--border);
+  border-radius:10px;
+  color:var(--text);
+  cursor:pointer;
+  font-weight:700;
+  transition:.2s;
+}
 
-    .card {
-      background:#161620;
-      padding:20px;
-      border-radius:14px;
-      border:1px solid #2a2a2a;
-      max-width:600px;
-    }
+.navbtn:hover {
+  background:var(--card);
+  border-color:var(--accent);
+  transform:translateX(6px);
+}
+
+.main { flex:1; padding:20px; }
   </style>
 </head>
 
@@ -44,7 +68,6 @@
 
 <div class="sidebar">
   <h3>🚀 Platform</h3>
-
   <button class="navbtn" onclick="location.href='/'">🏠 Home</button>
   <button class="navbtn" onclick="location.href='/games/index.html'">🎮 Games</button>
   <button class="navbtn" onclick="location.href='/marketplace/index.html'">🛒 Marketplace</button>
@@ -53,12 +76,8 @@
 
 <div class="main">
   <h1>Dashboard</h1>
-
-  <div class="card">
-    <h3>Welcome 👋</h3>
-    <p>Your platform is live and styled.</p>
-  </div>
+  <p>Platform running.</p>
 </div>
 
 </body>
-</html>s
+</html>
