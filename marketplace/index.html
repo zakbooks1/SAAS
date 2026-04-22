@@ -15,16 +15,26 @@
 const supabaseClient = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
 
 async function load(){
-  const {data}=await supabaseClient.from("games").select("*");
+  const { data } = await supabaseClient.from("games").select("*");
 
-  document.getElementById("games").innerHTML=data
-    .sort((a,b)=>(b.likes||0)-(a.likes||0))
-    .map(g=>
-      `<div style="padding:10px;background:#111827;margin:10px;border-radius:10px">
-        ${g.id} ❤️ ${g.likes||0}
-        <button onclick="location.href='/play.html?id=${g.id}'">Play</button>
-      </div>`
-    ).join("");
+  document.getElementById("games").innerHTML =
+    data.sort((a,b)=>(b.likes||0)-(a.likes||0))
+    .map(g => `
+      <div style="padding:10px;margin:10px;background:#111827;border-radius:10px">
+        <b>${g.id}</b> ❤️ ${g.likes||0}
+        <button onclick="play('${g.id}')">Play</button>
+      </div>
+    `).join("");
+}
+
+async function play(id){
+  const { data } = await supabaseClient
+    .from("games")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  window.parent.openGame(data.code);
 }
 
 load();
