@@ -1,35 +1,52 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <style>
-    body { background:#0b0b0f; color:white; font-family:system-ui; padding:20px; }
-    textarea { width:100%; height:120px; margin-top:10px; }
-  </style>
+<style>
+body { margin:0; display:flex; font-family:system-ui; background:#0b0b0f; color:white; }
+
+.sidebar { width:220px; background:#12121a; padding:20px; height:100vh; border-right:1px solid #222; }
+
+.main { flex:1; padding:20px; }
+
+.card { background:#161620; padding:15px; border-radius:14px; }
+
+textarea { width:100%; height:120px; }
+
+button { padding:10px; margin-top:10px; }
+</style>
 </head>
 
 <body>
 
-<button onclick="location.href='/'">🏠 Home</button>
+<div class="sidebar">
+  <button onclick="location.href='/'">🏠 Home</button>
+  <button onclick="location.href='/games/index.html'">🎮 Games</button>
+</div>
 
+<div class="main">
+
+<div class="card">
 <h2>Embed → HTML</h2>
 
 <textarea id="embed"></textarea>
 <button onclick="convert()">Convert</button>
 
 <textarea id="out"></textarea>
+</div>
+
+</div>
 
 <script>
-function convert() {
-  const e = document.getElementById("embed").value;
+function convert(){
+  const e=document.getElementById("embed").value;
 
-  const html = `<!DOCTYPE html>
+  document.getElementById("out").value=
+`<!DOCTYPE html>
 <html>
 <body style="margin:0;background:black;">
 ${e}
 </body>
 </html>`;
-
-  document.getElementById("out").value = html;
 }
 </script>
 
