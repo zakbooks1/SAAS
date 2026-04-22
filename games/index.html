@@ -9,7 +9,7 @@
 
 <h1>🎮 Games</h1>
 
-<textarea id="code"></textarea>
+<textarea id="code" placeholder="paste html game"></textarea>
 <button onclick="upload()">Upload</button>
 
 <div id="list"></div>
@@ -18,28 +18,40 @@
 const supabaseClient = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
 
 async function upload(){
-  const {data:user}=await supabaseClient.auth.getUser();
-  const id=Math.random().toString(36).slice(2,9);
+  const { data: user } = await supabaseClient.auth.getUser();
+
+  const id = Math.random().toString(36).slice(2,9);
 
   await supabaseClient.from("games").insert([{
     id,
-    code:document.getElementById("code").value,
-    user_id:user.user.id,
-    likes:0
+    code: document.getElementById("code").value,
+    user_id: user.user.id,
+    likes: 0
   }]);
 
   load();
 }
 
 async function load(){
-  const {data}=await supabaseClient.from("games").select("*");
+  const { data } = await supabaseClient.from("games").select("*");
 
-  document.getElementById("list").innerHTML=data.map(g=>
-    `<div>
-      ${g.id} ❤️ ${g.likes||0}
-      <button onclick="location.href='/play.html?id=${g.id}'">Play</button>
-    </div>`
-  ).join("");
+  document.getElementById("list").innerHTML =
+    data.map(g => `
+      <div style="margin:10px;padding:10px;background:#111827;border-radius:10px">
+        <b>${g.id}</b> ❤️ ${g.likes || 0}
+        <button onclick="play('${g.id}')">Play</button>
+      </div>
+    `).join("");
+}
+
+async function play(id){
+  const { data } = await supabaseClient
+    .from("games")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  window.parent.openGame(data.code);
 }
 
 load();
