@@ -1,48 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-
-<style>
-body { margin:0; display:flex; font-family:system-ui; background:#0b0b0f; color:white; }
-
-.sidebar { width:220px; background:#12121a; padding:20px; height:100vh; border-right:1px solid #222; }
-.navbtn { display:block; width:100%; padding:12px; margin:8px 0; background:#1b1b25; border:none; border-radius:10px; color:white; cursor:pointer; }
-
-.main { flex:1; padding:20px; }
-
-.grid { display:grid; grid-template-columns:repeat(auto-fill,200px); gap:12px; }
-
-.card { background:#161620; padding:12px; border-radius:14px; border:1px solid #2a2a2a; }
-</style>
+  <script src="/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 </head>
 
-<body>
+<body style="background:#0a0f1c;color:white;font-family:system-ui;margin:0;padding:20px">
 
-<div class="sidebar">
-  <button class="navbtn" onclick="location.href='/'">🏠 Home</button>
-  <button class="navbtn" onclick="location.href='/games/index.html'">🎮 Games</button>
-  <button class="navbtn" onclick="location.href='/tools/index.html'">🛠 Tools</button>
-</div>
-
-<div class="main">
 <h1>Marketplace</h1>
-<div id="games" class="grid"></div>
-</div>
+
+<div id="games"></div>
 
 <script>
-const supabaseClient=supabase.createClient("https://kruimxsgvsuguhwsqvlh.supabase.co","sb_publishable_MkNjCO_f8HsHyMwzsMRzng_8mn0-1kd");
-
-function card(g){
-  return `<div class="card">
-    <p>${g.id}</p>
-    <button onclick="location.href='/play.html?id=${g.id}'">Play</button>
-  </div>`;
-}
+const supabaseClient = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
 
 async function load(){
   const {data}=await supabaseClient.from("games").select("*");
-  document.getElementById("games").innerHTML=data.map(card).join("");
+
+  document.getElementById("games").innerHTML=
+    data.map(g=>`
+      <div style="padding:10px;background:#111827;margin:10px;border-radius:10px">
+        ${g.id}
+        <button onclick="location.href='/play.html?id=${g.id}'">Play</button>
+      </div>
+    `).join("");
 }
 
 load();
