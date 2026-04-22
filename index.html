@@ -2,27 +2,63 @@
 <html>
 <head>
   <title>Platform</title>
+
   <style>
     body { margin:0; display:flex; font-family:system-ui; background:#0b0b0f; color:white; }
-    .sidebar { width:220px; background:#12121a; padding:20px; height:100vh; }
-    .btn { display:block; width:100%; margin:8px 0; padding:12px; background:#1b1b25; border:none; border-radius:10px; color:white; cursor:pointer; text-align:left; }
-    .main { flex:1; padding:40px; }
+
+    .sidebar {
+      width:220px;
+      background:#12121a;
+      padding:20px;
+      height:100vh;
+      border-right:1px solid #222;
+    }
+
+    .navbtn {
+      display:block;
+      width:100%;
+      padding:12px;
+      margin:8px 0;
+      background:#1b1b25;
+      border:none;
+      border-radius:10px;
+      color:white;
+      cursor:pointer;
+    }
+
+    .navbtn:hover { background:#2a2a3a; }
+
+    .main { flex:1; padding:30px; }
+
+    .card {
+      background:#161620;
+      padding:20px;
+      border-radius:14px;
+      border:1px solid #2a2a2a;
+      max-width:600px;
+    }
   </style>
 </head>
+
 <body>
 
 <div class="sidebar">
   <h3>🚀 Platform</h3>
-  <button class="btn" onclick="location.href='/'">🏠 Home</button>
-  <button class="btn" onclick="location.href='/games/index.html'">🎮 Games</button>
-  <button class="btn" onclick="location.href='/marketplace/index.html'">🛒 Marketplace</button>
-  <button class="btn" onclick="location.href='/tools/index.html'">🛠 Tools</button>
+
+  <button class="navbtn" onclick="location.href='/'">🏠 Home</button>
+  <button class="navbtn" onclick="location.href='/games/index.html'">🎮 Games</button>
+  <button class="navbtn" onclick="location.href='/marketplace/index.html'">🛒 Marketplace</button>
+  <button class="navbtn" onclick="location.href='/tools/index.html'">🛠 Tools</button>
 </div>
 
 <div class="main">
   <h1>Dashboard</h1>
-  <p>Your platform is live.</p>
+
+  <div class="card">
+    <h3>Welcome 👋</h3>
+    <p>Your platform is live and styled.</p>
+  </div>
 </div>
 
 </body>
-</html>
+</html>s
