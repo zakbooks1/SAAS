@@ -1,39 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Play Game</title>
-  <style>
-    body { margin: 0; background: black; }
-    iframe { width: 100vw; height: 100vh; border: none; }
-  </style>
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 </head>
 
-<body>
+<body style="margin:0;background:black">
 
-<iframe id="frame"></iframe>
+<div id="game"></div>
 
 <script>
-const supabase = supabase.createClient(
-  "YOUR_SUPABASE_URL",
-  "YOUR_SUPABASE_ANON_KEY"
-);
+const supabaseClient = supabase.createClient("https://kruimxsgvsuguhwsqvlh.supabase.co","sb_publishable_MkNjCO_f8HsHyMwzsMRzng_8mn0-1kd");
+
+const id = new URLSearchParams(location.search).get("id");
 
 async function loadGame() {
-  const id = new URLSearchParams(location.search).get("id");
-
-  const { data } = await supabase
+  const { data } = await supabaseClient
     .from("games")
     .select("*")
     .eq("id", id)
     .single();
 
-  if (data) {
-    document.getElementById("frame").srcdoc = data.code;
-  } else {
-    document.body.innerHTML = "<h1>Game not found</h1>";
-  }
+  document.getElementById("game").innerHTML = data.code;
 }
 
 loadGame();
